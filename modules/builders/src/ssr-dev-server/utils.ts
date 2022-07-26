@@ -76,7 +76,8 @@ export function waitUntilServerIsListening(port: number, host?: string): Observa
     retryWhen((err) =>
       err.pipe(
         mergeMap((error, attempts) => {
-          return attempts > 10 || !allowedErrorCodes.includes(error.code)
+          const maxAttempts = parseInt(process.env['ATTEMPTS'], 10) || 10
+          return attempts > maxAttempts || !allowedErrorCodes.includes(error.code)
             ? throwError(error)
             : timer(100 * (attempts * 1));
         }),
